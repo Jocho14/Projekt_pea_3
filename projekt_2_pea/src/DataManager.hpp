@@ -6,7 +6,12 @@
 class DataManager 
 {
 public:
+	// metoda do odczytywania wyniku (cyklu) z pliku
 	static std::vector<int> readFile(const std::string& fileName);
-	static void saveFile(std::vector<int> cycle);
+
+	// metod do zapisywania wyniku (cyklu) do pliku
+	static void saveFile(std::vector<int> cycle, std::string fileName);
+
+	// metoda do wyœwietlania cyklu w konsoli
 	static void displayVector(std::vector<int> cycle);
 };

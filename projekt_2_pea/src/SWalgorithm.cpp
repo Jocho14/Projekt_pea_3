@@ -7,14 +7,14 @@
 #include <ctime>
 #include <vector>
 #include <chrono>
+#include <iostream>
 
 SWalgorithm::SWalgorithm()
     : minCycleWeight(INT_MAX)
     , minCycle()
-	, temperature(10000.0)
+	, temperature(100000.0)
     , minTemperature(0.00001)
-    , probability(1)
-    , minTotalCycleWeight(INT_MAX)
+    , probability(0)
 {
     srand(time(nullptr));
 }
@@ -26,10 +26,10 @@ int SWalgorithm::run(const shared_ptr<Matrix>& matrix, int timeLimit, double a)
     std::vector<int> currentCycle = generateInitialSolution(matrix->getSize());  // wygenerowanie pocz¹tkowego rozwi¹zania
     double currentCycleWeight = calculateCost(matrix, currentCycle);    // obliczenie kosztu pocz¹tkowego rozwi¹zania
 
+    temperature = currentCycleWeight * a;  // obliczenie pocz¹tkowej temperatury
+
     minCycle = currentCycle;               // Ustawienie minimalnego cyklu na pocz¹tkowy cykl
     minCycleWeight = currentCycleWeight;   // ustawienie minimalnego kosztu cyklu na pocz¹tkow¹ wartoœæ rozwi¹zania
-
-    // Obliczenie temperatury pocz¹tkowej (zaimplementowaæ logike obliczania!!!!!)
 
     while (temperature > minTemperature) // Kryterium stopu - temperatura koñcowa
     { 
@@ -49,15 +49,15 @@ int SWalgorithm::run(const shared_ptr<Matrix>& matrix, int timeLimit, double a)
 
         probability = exp(-costDifference / temperature);   // obliczenie prawdopodobieñstwa
 
-        if (costDifference < 0 || (probability > ((double)rand() / RAND_MAX))) 
-        {
-            currentCycle = newSolution;
+        if (costDifference < 0 || (probability > ((double)rand() / RAND_MAX))) // sprawdzenie czy nowy koszt jest mniejszy od aktualnego
+        {                                                                       // lub prawdopodobieñstwo jest wiêksze ni¿ losowa wartoœæ
+            currentCycle = newSolution;                                         // w celu wyjœcia z optimum lokalnego
             currentCycleWeight = newCost;
 
-            if (newCost < minCycleWeight) 
+            if (newCost < minCycleWeight)  // sprawdzenie czy nowy koszt jest wiêkszy ni¿ dotychczasowy
             {
-                minCycle = newSolution;
-                minCycleWeight = newCost;
+                minCycle = newSolution;     // ustawienie minimalnego cyklu na nowy cykl
+                minCycleWeight = newCost;   // ustawienie wartoœci minimalnego cyklu na wartoœæ nowego cyklu (najlepsze rozwiazanie)
             }
         }
         temperature *= a; // Sch³adzanie
@@ -96,6 +96,19 @@ void SWalgorithm::swap(std::vector<int>& solution)
         j = rand() % solution.size();
     }
     std::swap(solution[i], solution[j]);
+
+    /*for (int k = 0; k < (solution.size() / 2); k++)
+    {
+        int i = rand() % solution.size();
+        int j = rand() % solution.size();
+
+        while (i == j)
+        {
+            j = rand() % solution.size();
+        }
+
+        std::swap(solution[i], solution[j]);
+    }*/
 }
 
 std::vector<int> SWalgorithm::getMinCycle()
@@ -111,6 +124,11 @@ double SWalgorithm::getTemperature()
 double SWalgorithm::getProbability()
 {
     return probability;
+}
+
+int SWalgorithm::getMinCycleWeight()
+{
+    return minCycleWeight;
 }
 
 void SWalgorithm::clear()

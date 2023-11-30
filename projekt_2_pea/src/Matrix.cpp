@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <tinyxml2.h>
+#include <tinyxml2.h> // bibliotek do odczytywania poszczególnych atrybutów w pliku .xml
 
 using namespace tinyxml2;
 using namespace std;
@@ -76,23 +76,23 @@ void Matrix::loadFromXmlFile(const string& fileName_)
 {
 	XMLDocument doc;
 	XMLError eResult = doc.LoadFile(fileName_.c_str());
-	if (eResult != XML_SUCCESS) 
+	if (eResult != XML_SUCCESS)		// sprawdzenie czy nast¹pi³ b³¹d przy wczytywaniu pliku
 	{
-		cout << "Error " << endl;
+		cout << "Error" << endl;
 		return;
 	}
 
-	auto pGraph = doc.FirstChildElement("travellingSalesmanProblemInstance")->FirstChildElement("graph");
-	if (!pGraph) 
+	auto pGraph = doc.FirstChildElement("travellingSalesmanProblemInstance")->FirstChildElement("graph");	// przejœcie do atrybuty graph
+	if (!pGraph) // sprawdzenie czy istnieje atrybut graph
 	{
-		cout << "Error " << endl;
+		cout << "Error" << endl;
 		return;
 	}
 
 	int newSize = 0;
 	for (auto pVertex = pGraph->FirstChildElement("vertex"); pVertex != nullptr; pVertex = pVertex->NextSiblingElement("vertex")) 
 	{
-		newSize++;
+		newSize++; // zwiêkszanie rozmiaru w zale¿noœci od iloœci wyst¹pieñ vertex
 	}
 
 	int** newMatrix = new int* [newSize];
@@ -140,7 +140,6 @@ void Matrix::generateRandomData(const int size_, const int minValue, const int m
 			{
 				newMatrix[i][j] = rand() % (maxValue - minValue + 1) + minValue; //przypisanie losowej wartoœci do nowego elementu macierzy
 			}
-			 
 		}
 	}
 

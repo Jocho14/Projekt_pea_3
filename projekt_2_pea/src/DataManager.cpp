@@ -28,9 +28,9 @@ std::vector<int> DataManager::readFile(const std::string& fileName)
 	return cycle;
 }
 
-void DataManager::saveFile(std::vector<int> cycle)
+void DataManager::saveFile(std::vector<int> cycle, std::string fileName)
 {
-	const std::string result = "wynik.txt";
+	const std::string result = fileName;
 	std::ofstream outDataFile(result);
 
 	if (!outDataFile.is_open())

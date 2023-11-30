@@ -21,17 +21,23 @@ void showMenu()
 
 int main()
 {
-	//auto swAlgorithms = std::make_shared<SWalgorithm>();
-	std::vector<std::shared_ptr<SWalgorithm>> swAlgorithms(3, std::make_shared<SWalgorithm>());
+	std::vector<std::shared_ptr<SWalgorithm>> swAlgorithms;
+	for (int i = 0; i < 3; ++i) {
+		swAlgorithms.push_back(std::make_shared<SWalgorithm>()); // dodanie 3 instancji obiektu swAlgorithm do wektora
+	}
+
+	auto swAlgorithmReader = make_shared<SWalgorithm>();
 
 	auto matrix = std::make_shared<Matrix>();
 	std::vector<int> readCycle = {};	// odczytany z pliku cykl
 
 	int timeLimit = 10;	// domyœlnie ustawione kryterium na 10s
-	double a_ratio[3] = { 0.9999, 0.9998, 0.9997 }; // domyœlnie ustawione wspó³czynniki a
+	double aRatio[3] = { 0.99999, 0.99998, 0.99997 }; // domyœlnie ustawione wspó³czynniki a
+
+	int aChoice; // wybór zapisu cyklu dla wspó³czynnika
 
 	int opt;
-	std::string fileName;
+	std::string fileName, saveFileName, readFileName;
 
 	
 	do
@@ -57,7 +63,7 @@ int main()
 			for (int i = 0; i < 3; i++)
 			{
 				std::cout << "Podaj " << i+1 << " wspolczynnik zmiany(a) : ";
-				cin >> a_ratio[i];
+				cin >> aRatio[i];
 			}
 			
 			break;
@@ -68,8 +74,8 @@ int main()
 			{
 				swAlgorithms[i]->clear();	// wyczyszczenie poprzednich danych
 
-				std::cout << "a: " << a_ratio[i] << std::endl;
-				std::cout << "Wartosc cyklu: " << swAlgorithms[i]->run(matrix, timeLimit, a_ratio[i]) << std::endl;
+				std::cout << "a: " << aRatio[i] << std::endl;
+				std::cout << "Wartosc cyklu: " << swAlgorithms[i]->run(matrix, timeLimit, aRatio[i]) << std::endl;
 				std::cout << "Cykl: "; DataManager::displayVector(swAlgorithms[i]->getMinCycle()); cout << std::endl;
 				std::cout << "exp(-1/Tk): " << exp(-1/swAlgorithms[i]->getTemperature()) << std::endl;
 				std::cout << "Tk: " << swAlgorithms[i]->getTemperature() << std::endl << std::endl;
@@ -77,13 +83,19 @@ int main()
 			break;
 
 		case 5:
-			//DataManager::saveFile(swAlgorithms[i]->getMinCycle());
-			std::cout << "Zapisano do pliku\n";
+			std::cout << "Podaj nr wspolczynika (a), ktorego cykl chcesz zapisac do pliku (1, 2, lub 3): ";
+			std::cin >> aChoice;
+			std::cout << "Podaj nazwe pliku, do ktorego chcesz zapisac: ";
+			std::cin >> saveFileName;
+			DataManager::saveFile(swAlgorithms[aChoice-1]->getMinCycle(), saveFileName);
 			break;
 
 		case 6:
-			readCycle = DataManager::readFile("wynik.txt");
-			//std::cout << "Obliczona droga na podstawie tabeli kosztow: " << swAlgorithm->calculateCost(matrix, readCycle) << std::endl;
+			std::cout << "Podaj nazwe pliku, ktory chcesz odczytac: ";
+			std::cin >> readFileName;
+			readCycle = DataManager::readFile(readFileName);
+			std::cout << "Obliczona droga na podstawie tabeli kosztow: " << swAlgorithmReader->calculateCost(matrix, readCycle) << std::endl;
+			std::cout << std::endl;
 			break;
 
 		case 7:

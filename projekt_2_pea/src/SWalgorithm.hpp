@@ -8,7 +8,10 @@
 class SWalgorithm
 {
 public:
+	// konstruktor
 	SWalgorithm();
+
+	// destruktor (domyœlny)
 	~SWalgorithm() = default;
 
 	// metoda uruchamiaj¹ca algorytm
@@ -20,11 +23,17 @@ public:
 	// metoda obliczaj¹ca koszt cyklu
 	int calculateCost(const shared_ptr<Matrix>& matrix, const std::vector<int>& solution);
 
+	// metoda zwracaj¹ca temperature
 	double getTemperature();
 
+	// metoda zwracaj¹ca prawdopodobieñstwo wed³ug wzoru exp(-delta/Tk)
 	double getProbability();
 
-	void clear(); // czyszczenie pól algorytmu
+	// metoda zwracaj¹ca wartoœc minimalnego cyklu
+	int getMinCycleWeight();
+
+	// czyszczenie pól algorytmu
+	void clear(); 
 
 private:
 
@@ -37,9 +46,6 @@ private:
 private:
 	// minimalna waga cyklu
 	int minCycleWeight;
-
-	// najlepsze ca³kowite rozwi¹zanie
-	int minTotalCycleWeight;
 
 	// minimalny cykl
 	std::vector<int> minCycle;
