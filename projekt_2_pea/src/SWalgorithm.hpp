@@ -9,7 +9,7 @@ class SWalgorithm
 {
 public:
 	SWalgorithm();
-	~SWalgorithm();
+	~SWalgorithm() = default;
 
 	// metoda uruchamiaj¹ca algorytm
 	int run(const shared_ptr<Matrix>& matrix, int timeLimit, double a);
@@ -24,6 +24,8 @@ public:
 
 	double getProbability();
 
+	void clear(); // czyszczenie pól algorytmu
+
 private:
 
 	// metoda zamieniaj¹ca miejscami losowo wybrane wierzcho³ki
@@ -35,6 +37,9 @@ private:
 private:
 	// minimalna waga cyklu
 	int minCycleWeight;
+
+	// najlepsze ca³kowite rozwi¹zanie
+	int minTotalCycleWeight;
 
 	// minimalny cykl
 	std::vector<int> minCycle;

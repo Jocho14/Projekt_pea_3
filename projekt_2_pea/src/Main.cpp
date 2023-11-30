@@ -21,12 +21,14 @@ void showMenu()
 
 int main()
 {
-	auto swAlgorithm = std::make_shared<SWalgorithm>() ;
+	//auto swAlgorithms = std::make_shared<SWalgorithm>();
+	std::vector<std::shared_ptr<SWalgorithm>> swAlgorithms(3, std::make_shared<SWalgorithm>());
+
 	auto matrix = std::make_shared<Matrix>();
-	std::vector<int> readCycle = {};
+	std::vector<int> readCycle = {};	// odczytany z pliku cykl
 
 	int timeLimit = 10;	// domyœlnie ustawione kryterium na 10s
-	double a = 0.9999;		// domyœlnie ustawiony wspó³czynnik na 0.9999
+	double a_ratio[3] = { 0.9999, 0.9998, 0.9997 }; // domyœlnie ustawione wspó³czynniki a
 
 	int opt;
 	std::string fileName;
@@ -51,25 +53,37 @@ int main()
 			break;
 
 		case 3:
-			std::cout << "Podaj wspolczynnik zmiany (a): ";
-			cin >> a;
+			std::cout << "Podaj trzy wspolczynniki zmiany (a):\n";
+			for (int i = 0; i < 3; i++)
+			{
+				std::cout << "Podaj " << i+1 << " wspolczynnik zmiany(a) : ";
+				cin >> a_ratio[i];
+			}
+			
 			break;
 
 		case 4:
-			std::cout << "Wartosc cyklu: " << swAlgorithm->run(matrix, timeLimit, a) << std::endl;
-			std::cout << "Cykl: "; DataManager::displayVector(swAlgorithm->getMinCycle()); cout << std::endl;
-			std::cout << "exp(-1/Tk): " << swAlgorithm->getProbability() << std::endl;
-			std::cout << "Tk: " << swAlgorithm->getTemperature() << std::endl;
+
+			for (int i = 0; i < 3; i++)
+			{
+				swAlgorithms[i]->clear();	// wyczyszczenie poprzednich danych
+
+				std::cout << "a: " << a_ratio[i] << std::endl;
+				std::cout << "Wartosc cyklu: " << swAlgorithms[i]->run(matrix, timeLimit, a_ratio[i]) << std::endl;
+				std::cout << "Cykl: "; DataManager::displayVector(swAlgorithms[i]->getMinCycle()); cout << std::endl;
+				std::cout << "exp(-1/Tk): " << exp(-1/swAlgorithms[i]->getTemperature()) << std::endl;
+				std::cout << "Tk: " << swAlgorithms[i]->getTemperature() << std::endl << std::endl;
+			}
 			break;
 
 		case 5:
-			DataManager::saveFile(swAlgorithm->getMinCycle());
+			//DataManager::saveFile(swAlgorithms[i]->getMinCycle());
 			std::cout << "Zapisano do pliku\n";
 			break;
 
 		case 6:
 			readCycle = DataManager::readFile("wynik.txt");
-			std::cout << "Obliczona droga na podstawie tabeli kosztow: " << swAlgorithm->calculateCost(matrix, readCycle) << std::endl;
+			//std::cout << "Obliczona droga na podstawie tabeli kosztow: " << swAlgorithm->calculateCost(matrix, readCycle) << std::endl;
 			break;
 
 		case 7:

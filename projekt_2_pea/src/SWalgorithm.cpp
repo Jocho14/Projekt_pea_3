@@ -12,26 +12,22 @@ SWalgorithm::SWalgorithm()
     : minCycleWeight(INT_MAX)
     , minCycle()
 	, temperature(10000.0)
-    , minTemperature(0.0001)
+    , minTemperature(0.00001)
     , probability(1)
+    , minTotalCycleWeight(INT_MAX)
 {
     srand(time(nullptr));
-}
-
-SWalgorithm::~SWalgorithm()
-{
-
 }
 
 int SWalgorithm::run(const shared_ptr<Matrix>& matrix, int timeLimit, double a) 
 {
     auto startTime = std::chrono::steady_clock::now();  // rozpoczêcie odliczania czasu
 
-    std::vector<int> currentSolution = generateInitialSolution(matrix->getSize());
-    double currentCost = calculateCost(matrix, currentSolution);
+    std::vector<int> currentCycle = generateInitialSolution(matrix->getSize());  // wygenerowanie pocz¹tkowego rozwi¹zania
+    double currentCycleWeight = calculateCost(matrix, currentCycle);    // obliczenie kosztu pocz¹tkowego rozwi¹zania
 
-    minCycle = currentSolution;
-    minCycleWeight = currentCost;
+    minCycle = currentCycle;               // Ustawienie minimalnego cyklu na pocz¹tkowy cykl
+    minCycleWeight = currentCycleWeight;   // ustawienie minimalnego kosztu cyklu na pocz¹tkow¹ wartoœæ rozwi¹zania
 
     // Obliczenie temperatury pocz¹tkowej (zaimplementowaæ logike obliczania!!!!!)
 
@@ -45,18 +41,18 @@ int SWalgorithm::run(const shared_ptr<Matrix>& matrix, int timeLimit, double a)
             break;
         }
 
-        std::vector<int> newSolution = currentSolution;
-        swap(newSolution);
+        std::vector<int> newSolution = currentCycle; // stworzenie nowego cyklu
+        swap(newSolution);         // zamiana miast w nowym cyklu
 
         double newCost = calculateCost(matrix, newSolution);  // liczenie nowego kosztu
-        double costDifference = newCost - currentCost;       // ró¿nica temperatur delta y
+        double costDifference = newCost - currentCycleWeight;       // ró¿nica temperatur delta y
 
-        probability = exp(-costDifference / temperature);
+        probability = exp(-costDifference / temperature);   // obliczenie prawdopodobieñstwa
 
         if (costDifference < 0 || (probability > ((double)rand() / RAND_MAX))) 
         {
-            currentSolution = newSolution;
-            currentCost = newCost;
+            currentCycle = newSolution;
+            currentCycleWeight = newCost;
 
             if (newCost < minCycleWeight) 
             {
@@ -69,28 +65,34 @@ int SWalgorithm::run(const shared_ptr<Matrix>& matrix, int timeLimit, double a)
     return minCycleWeight; // najlepsze rozwi¹zanie
 }
 
-int SWalgorithm::calculateCost(const shared_ptr<Matrix>& matrix, const std::vector<int>& solution) {
+int SWalgorithm::calculateCost(const shared_ptr<Matrix>& matrix, const std::vector<int>& solution)
+{
     int cost = 0;
-    for (size_t i = 0; i < solution.size() - 1; ++i) {
+    for (size_t i = 0; i < solution.size() - 1; ++i) 
+    {
         cost += (*matrix)[solution[i]][solution[i + 1]];
     }
     cost += (*matrix)[solution.back()][solution.front()]; // Powrót do pocz¹tkowego wierzcho³ka
     return cost;
 }
 
-std::vector<int> SWalgorithm::generateInitialSolution(int n) {
+std::vector<int> SWalgorithm::generateInitialSolution(int n) 
+{
     std::vector<int> solution(n);
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) 
+    {
         solution[i] = i;
     }
     std::random_shuffle(solution.begin(), solution.end()); // Losowa permutacja wierzcho³ków
     return solution;
 }
 
-void SWalgorithm::swap(std::vector<int>& solution) {
+void SWalgorithm::swap(std::vector<int>& solution) 
+{
     int i = rand() % solution.size();
     int j = rand() % solution.size();
-    while (i == j) {
+    while (i == j) 
+    {
         j = rand() % solution.size();
     }
     std::swap(solution[i], solution[j]);
@@ -109,4 +111,11 @@ double SWalgorithm::getTemperature()
 double SWalgorithm::getProbability()
 {
     return probability;
+}
+
+void SWalgorithm::clear()
+{
+    minCycle.clear();
+    minCycleWeight = INT_MAX;
+    temperature = 100000.0;
 }
