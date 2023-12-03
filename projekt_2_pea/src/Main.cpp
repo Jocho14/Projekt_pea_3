@@ -25,21 +25,28 @@ int main()
 	for (int i = 0; i < 3; ++i) {
 		swAlgorithms.push_back(std::make_shared<SWalgorithm>()); // dodanie 3 instancji obiektu swAlgorithm do wektora
 	}
-
 	auto swAlgorithmReader = make_shared<SWalgorithm>();
 
 	auto matrix = std::make_shared<Matrix>();
+
 	std::vector<int> readCycle = {};	// odczytany z pliku cykl
 
 	int timeLimit = 10;	// domyœlnie ustawione kryterium na 10s
-	double aRatio[3] = { 0.99999, 0.99998, 0.99997 }; // domyœlnie ustawione wspó³czynniki a
+	double aRatio[3] = { 0.999, 0.998, 0.997 }; // domyœlnie ustawione wspó³czynniki a
 
 	int aChoice; // wybór zapisu cyklu dla wspó³czynnika
+
+	std::vector<int> solution;
+
+	auto matrix2 = make_shared<Matrix>();
 
 	int opt;
 	std::string fileName, saveFileName, readFileName;
 
-	
+
+	std::vector<int> cyclev1;
+	int resultv1;
+	// a optymalne, a mniejsze a mniejsze 
 	do
 	{
 		showMenu();
@@ -102,6 +109,11 @@ int main()
 			return 0;
 			break;
 
+		case 8:
+			cyclev1 = swAlgorithmReader->generateBFSSolution(matrix);
+			resultv1 = swAlgorithmReader->calculateCost(matrix, cyclev1);
+			std::cout << "Wartosc greedy: " << resultv1;
+			break;
 		default:
 			std::cout << "Niepoprawny nr opcji!\n";
 			break;

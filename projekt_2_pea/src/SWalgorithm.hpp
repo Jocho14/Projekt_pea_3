@@ -35,13 +35,25 @@ public:
 	// czyszczenie pól algorytmu
 	void clear(); 
 
+	// metoda generuj¹ca pocz¹tkowe rozwi¹zanie przy u¿yciu metody zach³annej
+	std::vector<int> generateBFSSolution(const shared_ptr<Matrix>& matrix);
+
 private:
 
 	// metoda zamieniaj¹ca miejscami losowo wybrane wierzcho³ki
 	void swap(std::vector<int>& solution);
 
-	// metoda generuj¹ca pocz¹tkowe rozwi¹zanie
-	std::vector<int> generateInitialSolution(int n);
+	
+
+	// kolejne metody poœwiêcone s¹ wyliczeniu pocz¹tkowej temperatury
+	// metoda pomocnicza do obliczenia sumy exp kosztów
+	double expSum(const shared_ptr<Matrix>& matrix, double T, bool isMax);
+	
+	// metoda do obliecznia chi(T) dla danego T
+	double chi(const shared_ptr<Matrix>& matrix, double T);
+
+	// metoda do znalezienia temperatury pocz¹tkowej
+	double findInitialTemperature(const shared_ptr<Matrix>& matrix, double x0, double epsilon, double p);
 
 private:
 	// minimalna waga cyklu

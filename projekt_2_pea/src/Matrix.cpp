@@ -82,7 +82,7 @@ void Matrix::loadFromXmlFile(const string& fileName_)
 		return;
 	}
 
-	auto pGraph = doc.FirstChildElement("travellingSalesmanProblemInstance")->FirstChildElement("graph");	// przejœcie do atrybuty graph
+	auto pGraph = doc.FirstChildElement("travellingSalesmanProblemInstance")->FirstChildElement("graph");	// przejœcie do atrybutu graph
 	if (!pGraph) // sprawdzenie czy istnieje atrybut graph
 	{
 		cout << "Error" << endl;
