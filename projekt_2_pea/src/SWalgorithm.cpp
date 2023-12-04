@@ -16,6 +16,7 @@ SWalgorithm::SWalgorithm()
 	, temperature(1000.0)
     , minTemperature(0)
     , probability(0)
+    , timeMinCycleFoundAt(0)
 {
     srand(time(nullptr));
 }
@@ -26,14 +27,16 @@ int SWalgorithm::run(const shared_ptr<Matrix>& matrix, int timeLimit, double a)
     auto startTime = std::chrono::steady_clock::now();  // rozpoczêcie odliczania czasu
 
     auto currentCycle = generateBFSSolution(matrix);                    // wygenerowanie pocz¹tkowego rozwi¹zania
+    //auto currentCycle = generateStartSolution(matrix->getSize());
     double currentCycleWeight = calculateCost(matrix, currentCycle);    // obliczenie kosztu pocz¹tkowego rozwi¹zania
 
-    temperature = findInitialTemperature(matrix, 0.8, 0.001, 1); // obliczenie pocz¹tkowej temperatury
+    temperature = findInitialTemperature(matrix, 0.95, 0.001, 1); // obliczenie pocz¹tkowej temperatury (0.8, 0.001, 1)
+    std::cout << "temperatura = : " << temperature;
 
     minCycle = currentCycle;               // Ustawienie minimalnego cyklu na pocz¹tkowy cykl
     minCycleWeight = currentCycleWeight;   // ustawienie minimalnego kosztu cyklu na pocz¹tkow¹ wartoœæ rozwi¹zania
-
-    int era = 1000; // 200 iteracji dla ka¿dego puntku temperatury, w celu znalezienia najlepszego rozwi¹zania
+    // 1000 era dla ftv55.xml
+    int era = 1000; // 1000 iteracji dla ka¿dego puntku temperatury, w celu znalezienia najlepszego rozwi¹zania
     while (temperature > minTemperature) // Kryterium stopu - temperatura koñcowa
     {
         int eraIterator = 0;
@@ -49,7 +52,9 @@ int SWalgorithm::run(const shared_ptr<Matrix>& matrix, int timeLimit, double a)
             }
 
             std::vector<int> newSolution = currentCycle; // stworzenie nowego cyklu
-            swap(newSolution);         // zamiana miast w nowym cyklu
+
+            insert(newSolution);  // zamiana miast w nowym cyklu najlepsze dla ftv170
+            //swap(newSolution);
 
             double newCost = calculateCost(matrix, newSolution);  // liczenie nowego kosztu
             double costDifference = newCost - currentCycleWeight;       // ró¿nica temperatur delta y
@@ -63,6 +68,9 @@ int SWalgorithm::run(const shared_ptr<Matrix>& matrix, int timeLimit, double a)
 
                 if (newCost < minCycleWeight)  // sprawdzenie czy nowy koszt jest wiêkszy ni¿ dotychczasowy
                 {
+                    auto exactTime = std::chrono::steady_clock::now();
+                    timeMinCycleFoundAt = std::chrono::duration_cast<std::chrono::nanoseconds>(exactTime - startTime).count();
+
                     minCycle = newSolution;     // ustawienie minimalnego cyklu na nowy cykl
                     minCycleWeight = newCost;   // ustawienie wartoœci minimalnego cyklu na wartoœæ nowego cyklu (najlepsze rozwiazanie)
                 }
@@ -124,6 +132,17 @@ std::vector<int> SWalgorithm::generateBFSSolution(const shared_ptr<Matrix>& matr
     return result;
 }
 
+std::vector<int> SWalgorithm::generateStartSolution(const int n) 
+{
+    std::vector<int> solution(n);
+    for (int i = 0; i < n; ++i) 
+    {
+        solution[i] = i;
+    }
+    std::random_shuffle(solution.begin(), solution.end()); // Losowa permutacja wierzcho³ków
+    return solution;
+}
+
 double SWalgorithm::expSum(const shared_ptr<Matrix>& matrix, double T, bool isMax)
 {
         double sum = 0.0;
@@ -131,7 +150,7 @@ double SWalgorithm::expSum(const shared_ptr<Matrix>& matrix, double T, bool isMa
         {
             for (int j = 0; j < matrix->getSize(); ++j)
             {
-                if (i != j) { // Pomin¹æ g³ówn¹ przek¹tn¹
+                if (i != j) {
                     double cost = static_cast<double>((*matrix)[i][j]);
                     sum += exp((isMax ? -cost : cost) / T);
                 }
@@ -174,6 +193,21 @@ void SWalgorithm::swap(std::vector<int>& solution)
     std::swap(solution[i], solution[j]);
 }
 
+void SWalgorithm::insert(vector<int>& solution) {
+
+    int i = rand() % solution.size();
+    int j = rand() % solution.size();
+    while (i == j)
+    {
+        j = rand() % solution.size();
+    }
+   
+    int valueToInsert = solution[i];
+ 
+    solution.erase(solution.begin() + i);
+   
+    solution.insert(solution.begin() + j, valueToInsert);
+}
 std::vector<int> SWalgorithm::getMinCycle()
 {
     return minCycle;
@@ -194,9 +228,15 @@ int SWalgorithm::getMinCycleWeight()
     return minCycleWeight;
 }
 
+long long SWalgorithm::getTimeMinCycleFoundAt()
+{
+    return timeMinCycleFoundAt;
+}
+
 void SWalgorithm::clear()
 {
     minCycle.clear();
     minCycleWeight = INT_MAX;
     temperature = 1000.0;
+    timeMinCycleFoundAt = 0;
 }

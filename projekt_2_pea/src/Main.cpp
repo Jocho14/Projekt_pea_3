@@ -22,7 +22,7 @@ void showMenu()
 int main()
 {
 	std::vector<std::shared_ptr<SWalgorithm>> swAlgorithms;
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; i++) {
 		swAlgorithms.push_back(std::make_shared<SWalgorithm>()); // dodanie 3 instancji obiektu swAlgorithm do wektora
 	}
 	auto swAlgorithmReader = make_shared<SWalgorithm>();
@@ -32,7 +32,9 @@ int main()
 	std::vector<int> readCycle = {};	// odczytany z pliku cykl
 
 	int timeLimit = 10;	// domyœlnie ustawione kryterium na 10s
-	double aRatio[3] = { 0.999, 0.998, 0.997 }; // domyœlnie ustawione wspó³czynniki a
+	//double aRatio[3] = { 0.99982, 0.9998, 0.995 }; // a (optymalne, wieksze, mniejsze) ftv55.xml
+	//double aRatio[3] = { 0.999, 0.995, 0.9998 };   // a (optymalne, wiêksze, mniejsze) rbg358.xml
+	double aRatio[3] = { 0.999, 0.995, 0.99 }; // a (optymalne, wieksze, mniejsze) ftv170.xml
 
 	int aChoice; // wybór zapisu cyklu dla wspó³czynnika
 
@@ -43,10 +45,16 @@ int main()
 	int opt;
 	std::string fileName, saveFileName, readFileName;
 
-
 	std::vector<int> cyclev1;
 	int resultv1;
-	// a optymalne, a mniejsze a mniejsze 
+
+	// testy
+	std::vector<std::string> fileNamesForTest = { "ftv55.xml", "ftv170.xml", "rbg358.xml" };
+	std::vector<std::string> outputFileNamesForTest = { "ftv55.txt", "ftv170.txt", "rbg358.xml" };
+	std::vector<int> timeLimitsForTest = { 120, 240, 360 };
+
+	int numberOfTests = 10; // 10 testow
+	
 	do
 	{
 		showMenu();
@@ -69,10 +77,10 @@ int main()
 			std::cout << "Podaj trzy wspolczynniki zmiany (a):\n";
 			for (int i = 0; i < 3; i++)
 			{
-				std::cout << "Podaj " << i+1 << " wspolczynnik zmiany(a) : ";
+				std::cout << "Podaj " << i + 1 << " wspolczynnik zmiany(a) : ";
 				cin >> aRatio[i];
 			}
-			
+
 			break;
 
 		case 4:
@@ -84,8 +92,9 @@ int main()
 				std::cout << "a: " << aRatio[i] << std::endl;
 				std::cout << "Wartosc cyklu: " << swAlgorithms[i]->run(matrix, timeLimit, aRatio[i]) << std::endl;
 				std::cout << "Cykl: "; DataManager::displayVector(swAlgorithms[i]->getMinCycle()); cout << std::endl;
-				std::cout << "exp(-1/Tk): " << exp(-1/swAlgorithms[i]->getTemperature()) << std::endl;
-				std::cout << "Tk: " << swAlgorithms[i]->getTemperature() << std::endl << std::endl;
+				std::cout << "exp(-1/Tk): " << exp(-1 / swAlgorithms[i]->getTemperature()) << std::endl;
+				std::cout << "Tk: " << swAlgorithms[i]->getTemperature() << std::endl;
+				std::cout << "Moment czasu kiedy znaleziono: " << swAlgorithms[i]->getTimeMinCycleFoundAt() << "ns" << std::endl << std::endl;
 			}
 			break;
 
@@ -94,7 +103,7 @@ int main()
 			std::cin >> aChoice;
 			std::cout << "Podaj nazwe pliku, do ktorego chcesz zapisac: ";
 			std::cin >> saveFileName;
-			DataManager::saveFile(swAlgorithms[aChoice-1]->getMinCycle(), saveFileName);
+			DataManager::saveFile(swAlgorithms[aChoice - 1]->getMinCycle(), saveFileName);
 			break;
 
 		case 6:
@@ -111,9 +120,28 @@ int main()
 
 		case 8:
 			cyclev1 = swAlgorithmReader->generateBFSSolution(matrix);
+			DataManager::saveFile(cyclev1, "greedy.txt");
 			resultv1 = swAlgorithmReader->calculateCost(matrix, cyclev1);
 			std::cout << "Wartosc greedy: " << resultv1;
 			break;
+
+		case 9:
+
+			for(int test = 0; test < numberOfTests; test++)
+			{
+				for (int i = 0; i < 1; i++)
+				{
+					matrix->loadFromXmlFile(fileNamesForTest[i]);
+					for (int j = 0; j < 3; j++)
+					{
+						swAlgorithms[j]->clear();	// wyczyszczenie poprzednich danych
+						swAlgorithms[j]->run(matrix, timeLimitsForTest[i], aRatio[j]);
+						DataManager::saveFileTest(swAlgorithms[j]->getMinCycleWeight(),
+							swAlgorithms[j]->getTimeMinCycleFoundAt(), aRatio[j], outputFileNamesForTest[i]);
+					}
+				}
+			}
+			
 		default:
 			std::cout << "Niepoprawny nr opcji!\n";
 			break;

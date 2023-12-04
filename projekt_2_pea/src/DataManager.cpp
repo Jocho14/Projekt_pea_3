@@ -61,3 +61,17 @@ void DataManager::displayVector(std::vector<int> cycle)
 	}
 	std::cout << cycle.at(0);
 }
+
+void DataManager::saveFileTest(int minCycle, long long time, double a, const std::string& fileName) 
+{
+	std::ofstream outDataFile(fileName, std::ios_base::app);
+
+	if (!outDataFile.is_open())
+	{
+		std::cout << "Nie mozna otworzyc pliku: " << fileName << std::endl;
+		return;
+	}
+
+	outDataFile << "minimalny cykl: " << minCycle << ", czas: " << time << ", wsp (a): " << a << std::endl;
+	outDataFile.close();
+}

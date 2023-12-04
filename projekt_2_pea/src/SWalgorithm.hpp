@@ -32,6 +32,9 @@ public:
 	// metoda zwracaj¹ca wartoœc minimalnego cyklu
 	int getMinCycleWeight();
 
+	// metoda zwracaj¹ca moment czasu w którym znaleziono najlepsze rozwi¹zanie
+	long long getTimeMinCycleFoundAt();
+
 	// czyszczenie pól algorytmu
 	void clear(); 
 
@@ -40,10 +43,13 @@ public:
 
 private:
 
+	std::vector<int> generateStartSolution(const int n);
+
 	// metoda zamieniaj¹ca miejscami losowo wybrane wierzcho³ki
 	void swap(std::vector<int>& solution);
 
-	
+	// metoda insert
+	void insert(std::vector<int>& solution);
 
 	// kolejne metody poœwiêcone s¹ wyliczeniu pocz¹tkowej temperatury
 	// metoda pomocnicza do obliczenia sumy exp kosztów
@@ -70,4 +76,6 @@ private:
 
 	// temperatura minimalna
 	double minTemperature;
+
+	long long timeMinCycleFoundAt;
 };

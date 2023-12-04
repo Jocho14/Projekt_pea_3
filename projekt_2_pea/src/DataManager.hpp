@@ -14,4 +14,7 @@ public:
 
 	// metoda do wyœwietlania cyklu w konsoli
 	static void displayVector(std::vector<int> cycle);
+
+	// metoda do zapisywania danych do sprawozdania
+	static void saveFileTest(int minCycle, long long time, double a, const std::string& fileName);
 };
