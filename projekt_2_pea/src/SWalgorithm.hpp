@@ -15,13 +15,19 @@ public:
 	~SWalgorithm() = default;
 
 	// metoda uruchamiaj¹ca algorytm
-	int run(const shared_ptr<Matrix>& matrix, int timeLimit, double a);
+	int run(const shared_ptr<Matrix>& matrix, const int timeLimit, const double a);
 
-	// metoda zwracaj¹ca minimalny cykl
-	std::vector<int> getMinCycle();
+	// metoda generuj¹ca pocz¹tkowe rozwi¹zanie przy u¿yciu metody zach³annej
+	std::vector<int> generateBFSSolution(const shared_ptr<Matrix>& matrix);
 
 	// metoda obliczaj¹ca koszt cyklu
 	int calculateCost(const shared_ptr<Matrix>& matrix, const std::vector<int>& solution);
+
+	// czyszczenie pól algorytmu
+	void clear(); 
+
+	// metoda zwracaj¹ca minimalny cykl
+	std::vector<int> getMinCycle();
 
 	// metoda zwracaj¹ca temperature
 	double getTemperature();
@@ -35,22 +41,14 @@ public:
 	// metoda zwracaj¹ca moment czasu w którym znaleziono najlepsze rozwi¹zanie
 	long long getTimeMinCycleFoundAt();
 
-	// czyszczenie pól algorytmu
-	void clear(); 
-
-	// metoda generuj¹ca pocz¹tkowe rozwi¹zanie przy u¿yciu metody zach³annej
-	std::vector<int> generateBFSSolution(const shared_ptr<Matrix>& matrix);
-
 private:
-
-	std::vector<int> generateStartSolution(const int n);
-
 	// metoda zamieniaj¹ca miejscami losowo wybrane wierzcho³ki
 	void swap(std::vector<int>& solution);
 
 	// metoda insert
 	void insert(std::vector<int>& solution);
 
+private:
 	// kolejne metody poœwiêcone s¹ wyliczeniu pocz¹tkowej temperatury
 	// metoda pomocnicza do obliczenia sumy exp kosztów
 	double expSum(const shared_ptr<Matrix>& matrix, double T, bool isMax);
@@ -62,20 +60,21 @@ private:
 	double findInitialTemperature(const shared_ptr<Matrix>& matrix, double x0, double epsilon, double p);
 
 private:
-	// minimalna waga cyklu
+	// waga minimalnego cyklu
 	int minCycleWeight;
 
 	// minimalny cykl
 	std::vector<int> minCycle;
 
+	// moment czasu, w którym odnaleziono najlepsze rozwi¹zanie
+	long long timeMinCycleFoundAt;
+
 	// temperatura (pocz¹tkowa)
 	double temperature;
-
-	// e^(-1/temperature)
-	double probability;
 
 	// temperatura minimalna
 	double minTemperature;
 
-	long long timeMinCycleFoundAt;
-};
+	// e^(-1/temperature) prawdopodobieñstwo wyboru gorszego rozwi¹zania
+	double probability;
+}; 

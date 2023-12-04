@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <tinyxml2.h> // bibliotek do odczytywania poszczególnych atrybutów w pliku .xml
+#include <tinyxml2.h> // biblioteka do odczytywania poszczególnych atrybutów w pliku .xml
 
 using namespace tinyxml2;
 using namespace std;

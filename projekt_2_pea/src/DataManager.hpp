@@ -15,6 +15,9 @@ public:
 	// metoda do wyœwietlania cyklu w konsoli
 	static void displayVector(std::vector<int> cycle);
 
+	// metoda do dodania speratorów w pliku tekstowym
+	static void saveSeparators(std::string fileName);
+
 	// metoda do zapisywania danych do sprawozdania
 	static void saveFileTest(int minCycle, long long time, double a, const std::string& fileName);
 };

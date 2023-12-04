@@ -31,7 +31,7 @@ std::vector<int> DataManager::readFile(const std::string& fileName)
 void DataManager::saveFile(std::vector<int> cycle, std::string fileName)
 {
 	const std::string result = fileName;
-	std::ofstream outDataFile(result);
+	std::ofstream outDataFile(result, std::ios_base::app);
 
 	if (!outDataFile.is_open())
 	{
@@ -47,6 +47,22 @@ void DataManager::saveFile(std::vector<int> cycle, std::string fileName)
 		outDataFile << city << std::endl;
 	}
 	outDataFile << cycle.at(0);
+
+	outDataFile.close();
+}
+
+void DataManager::saveSeparators(std::string fileName)
+{
+	const std::string result = fileName;
+	std::ofstream outDataFile(fileName, std::ios_base::app);
+
+	if (!outDataFile.is_open())
+	{
+		std::cout << "Nie mozna otworzyc pliku: " << result << std::endl;
+		return;
+	}
+
+	outDataFile << "\n=============================\n";
 
 	outDataFile.close();
 }
