@@ -1,6 +1,8 @@
 #include "DataManager.hpp"
 #include <fstream>
 #include <iostream>
+#include <cmath>
+
 
 std::vector<int> DataManager::readFile(const std::string& fileName)
 {
@@ -78,7 +80,7 @@ void DataManager::displayVector(std::vector<int> cycle)
 	std::cout << cycle.at(0);
 }
 
-void DataManager::saveFileTest(int minCycle, long long time, double a, const std::string& fileName) 
+void DataManager::saveFileTest(int minCycle, long long time, double a, double tk, const std::string& fileName) 
 {
 	std::ofstream outDataFile(fileName, std::ios_base::app);
 
@@ -88,6 +90,6 @@ void DataManager::saveFileTest(int minCycle, long long time, double a, const std
 		return;
 	}
 
-	outDataFile << "minimalny cykl: " << minCycle << ", czas: " << time << ", wsp (a): " << a << std::endl;
+	outDataFile << "minimalny cykl: " << minCycle << ", czas: " << time << ", wsp (a): " << a <<", tk: " << tk <<", exp(-1/Tk)" << exp(-1/tk) << std::endl;
 	outDataFile.close();
 }

@@ -19,5 +19,5 @@ public:
 	static void saveSeparators(std::string fileName);
 
 	// metoda do zapisywania danych do sprawozdania
-	static void saveFileTest(int minCycle, long long time, double a, const std::string& fileName);
+	static void saveFileTest(int minCycle, long long time, double a, double tk, const std::string& fileName);
 };

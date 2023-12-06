@@ -42,10 +42,7 @@ public:
 	long long getTimeMinCycleFoundAt();
 
 private:
-	// metoda zamieniaj¹ca miejscami losowo wybrane wierzcho³ki
-	void swap(std::vector<int>& solution);
-
-	// metoda insert
+	// metoda przemieszczaj¹ca losowy wierzcho³ek w losowe miejsce
 	void insert(std::vector<int>& solution);
 
 private:

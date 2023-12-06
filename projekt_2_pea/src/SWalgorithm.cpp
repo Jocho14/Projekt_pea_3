@@ -31,7 +31,7 @@ int SWalgorithm::run(const shared_ptr<Matrix>& matrix, const int timeLimit, cons
     auto currentCycle = generateBFSSolution(matrix);                    // wygenerowanie pocz¹tkowego rozwi¹zania
     double currentCycleWeight = calculateCost(matrix, currentCycle);    // obliczenie kosztu pocz¹tkowego rozwi¹zania
 
-    temperature = findInitialTemperature(matrix, 0.90, 0.001, 1); // obliczenie pocz¹tkowej temperatury (0.8, 0.001, 1) 0.95
+    temperature = findInitialTemperature(matrix, 0.95, 0.001, 1); // obliczenie pocz¹tkowej temperatury
     //std::cout << "temperatura = : " << temperature;
 
     minCycle = currentCycle;               // Ustawienie minimalnego cyklu na pocz¹tkowy cykl
@@ -134,18 +134,18 @@ int SWalgorithm::calculateCost(const shared_ptr<Matrix>& matrix, const std::vect
 
 double SWalgorithm::expSum(const shared_ptr<Matrix>& matrix, double T, bool isMax)
 {
-        double sum = 0.0;
-        for (int i = 0; i < matrix->getSize(); ++i)
+    double sum = 0.0;
+    for (int i = 0; i < matrix->getSize(); ++i)
+    {
+        for (int j = 0; j < matrix->getSize(); ++j)
         {
-            for (int j = 0; j < matrix->getSize(); ++j)
-            {
-                if (i != j) {
-                    double cost = static_cast<double>((*matrix)[i][j]);
-                    sum += exp((isMax ? -cost : cost) / T);
-                }
+            if (i != j) {
+                double cost = static_cast<double>((*matrix)[i][j]);
+                sum += exp((isMax ? -cost : cost) / T);
             }
         }
-        return sum;
+    }
+    return sum;
 }
 
 double SWalgorithm::chi(const shared_ptr<Matrix>& matrix, double T)
@@ -169,17 +169,6 @@ double SWalgorithm::findInitialTemperature(const shared_ptr<Matrix>& matrix, dou
     }
 
     return Tn;
-}
-
-void SWalgorithm::swap(std::vector<int>& solution) 
-{
-    int i = rand() % solution.size();
-    int j = rand() % solution.size();
-    while (i == j) 
-    {
-        j = rand() % solution.size();
-    }
-    std::swap(solution[i], solution[j]);
 }
 
 void SWalgorithm::insert(vector<int>& solution) {

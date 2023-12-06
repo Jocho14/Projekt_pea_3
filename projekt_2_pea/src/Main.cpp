@@ -21,9 +21,9 @@ void showMenu()
 
 int main()
 {
-	const int numberOfAlgorithms = 5;
+	const int NUMBEROFALGORITHMS = 3;
 	std::vector<std::shared_ptr<SWalgorithm>> swAlgorithms;
-	for (int i = 0; i < numberOfAlgorithms; i++) {
+	for (int i = 0; i < NUMBEROFALGORITHMS; i++) {
 		swAlgorithms.push_back(std::make_shared<SWalgorithm>()); // dodanie 3 instancji obiektu swAlgorithm do wektora
 	}
 
@@ -36,7 +36,8 @@ int main()
 	// domyœlnie ustawione kryterium na 60s
 	int timeLimit = 60;	
 
-	double coolingRatio[numberOfAlgorithms] = { 0.999, 0.9997, 0.99965, 0.995, 0.99 };
+	//double coolingRatio[numberOfAlgorithms] = { 0.999, 0.9997, 0.99965, 0.995, 0.99 };
+	double coolingRatio[NUMBEROFALGORITHMS] = { 0.999, 0.9995, 0.99 };
 	int coolingChoice; // wybór zapisu cyklu dla wspó³czynnika
 
 	// pliki (wczytaj xml, zapisz œcie¿ke txt, odczytaj œcie¿ke z txt)
@@ -82,7 +83,7 @@ int main()
 			break;
 
 		case 4:
-			for (int i = 0; i < numberOfAlgorithms; i++)
+			for (int i = 0; i < NUMBEROFALGORITHMS; i++)
 			{
 				std::cout << "a: "			   << coolingRatio[i] << std::endl;
 				std::cout << "Wartosc cyklu: " << swAlgorithms[i]->run(matrix, timeLimit, coolingRatio[i]) << std::endl;
@@ -96,7 +97,7 @@ int main()
 		case 5:
 			std::cout << "Podaj nr wspolczynika (a), ktorego cykl chcesz zapisac do pliku (1, 2, lub 3): ";
 			std::cin >> coolingChoice;
-			if (coolingChoice < 1 && coolingChoice > numberOfAlgorithms)
+			if (coolingChoice < 1 && coolingChoice > NUMBEROFALGORITHMS)
 			{
 				break;
 			}
@@ -131,17 +132,15 @@ int main()
 			std::cout << "W trakcie testowania...\n";
 			for(int test = 0; test < numberOfTests; test++)
 			{
-				for (int i = 0; i < 1; i++)
+				for (int i = 0; i < 3; i++)
 				{
 					matrix->loadFromXmlFile(inputFileTest[i]);
-					for (int j = 0; j < numberOfAlgorithms; j++)
+					for (int j = 0; j < NUMBEROFALGORITHMS; j++)
 					{
-						swAlgorithms[j]->clear();	// wyczyszczenie poprzednich danych
-
 						swAlgorithms[j]->run(matrix, timeLimitsForTest[i], coolingRatio[j]);
 
 						DataManager::saveFileTest(swAlgorithms[j]->getMinCycleWeight(),
-							swAlgorithms[j]->getTimeMinCycleFoundAt(), coolingRatio[j], outputFileMinWeightTest[i]);
+							swAlgorithms[j]->getTimeMinCycleFoundAt(), coolingRatio[j], swAlgorithms[j]->getTemperature(), outputFileMinWeightTest[i]);
 
 						DataManager::saveSeparators(outputFileMinCycleTest[i]); // dodanie separatora
 						DataManager::saveFile(swAlgorithms[j]->getMinCycle(), outputFileMinCycleTest[i]);
@@ -149,6 +148,7 @@ int main()
 					}
 				}
 			}
+			break;
 			
 		default:
 			std::cout << "Niepoprawny nr opcji!\n";
