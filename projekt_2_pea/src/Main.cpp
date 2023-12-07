@@ -19,6 +19,14 @@ void showMenu()
 	std::cout << "Wybierz opcje: ";
 }
 
+void showPath(std::vector<int> solution)
+{
+	for (const auto& node : solution)
+	{
+		cout << node << " -> ";
+	}
+}
+
 int main()
 {
 	const int NUMBEROFALGORITHMS = 3;

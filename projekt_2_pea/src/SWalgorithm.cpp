@@ -32,7 +32,6 @@ int SWalgorithm::run(const shared_ptr<Matrix>& matrix, const int timeLimit, cons
     double currentCycleWeight = calculateCost(matrix, currentCycle);    // obliczenie kosztu pocz¹tkowego rozwi¹zania
 
     temperature = findInitialTemperature(matrix, 0.95, 0.001, 1); // obliczenie pocz¹tkowej temperatury
-    //std::cout << "temperatura = : " << temperature;
 
     minCycle = currentCycle;               // Ustawienie minimalnego cyklu na pocz¹tkowy cykl
     minCycleWeight = currentCycleWeight;   // ustawienie minimalnego kosztu cyklu na pocz¹tkow¹ wartoœæ rozwi¹zania
