@@ -93,3 +93,17 @@ void DataManager::saveFileTest(int minCycle, long long time, double a, double tk
 	outDataFile << "minimalny cykl: " << minCycle << ", czas: " << time << ", wsp (a): " << a <<", tk: " << tk <<", exp(-1/Tk)" << exp(-1/tk) << std::endl;
 	outDataFile.close();
 }
+
+void DataManager::saveFileTestForGA(int bestChromosomeWeight, int tournamentCount, int populationSize, long long time, const std::string& fileName)
+{
+	std::ofstream outDataFile(fileName, std::ios_base::app);
+
+	if (!outDataFile.is_open())
+	{
+		std::cout << "Nie mozna otworzyc pliku: " << fileName << std::endl;
+		return;
+	}
+
+	outDataFile << "Najlepszy chromosom: " << bestChromosomeWeight << ", liczba osobnikow w turnieju: " << tournamentCount  << ", rozmiar populacji: " << populationSize <<", czas: " << time << std::endl;
+	outDataFile.close();
+}

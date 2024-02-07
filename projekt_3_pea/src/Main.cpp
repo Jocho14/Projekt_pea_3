@@ -8,7 +8,7 @@
 
 void showMenu()
 {
-	std::cout << "---Algorytm genetyczny dla TSP---\n\n";
+	std::cout << "---Algorytm genetyczny dla ATSP---\n\n";
 	std::cout << "1. Wczytaj dane z pliku\n";
 	std::cout << "2. Wprowadz kryterium stopu\n";
 	std::cout << "3. Ustaw wielkosc populacji poczatkowej\n";
@@ -17,7 +17,6 @@ void showMenu()
 	std::cout << "5. Ustaw wspolczynnik mutacji\n";
 	std::cout << "   ------------------------------------\n";
 	std::cout << "6. Wybierz metode krzyzowania\n";
-	std::cout << "7. Wybierz metode mutacji\n";
 	std::cout << "   ------------------------------------\n";
 	std::cout << "8. URUCHOM ALGORYTM\n";
 	std::cout << "   ------------------------------------\n";
@@ -35,51 +34,55 @@ void showPath(std::vector<int> solution)
 
 int main()
 {
-	// obiekt wykorzystany tylko do policzenia œcie¿ki
 	auto gaAlgorithm = make_shared<GAalgorithm>();
 
 	// macierz s¹siedztw miast
 	auto matrix = std::make_shared<Matrix>();
 
-	// pliki (wczytaj xml, zapisz œcie¿ke txt, odczytaj œcie¿ke z txt)
-	std::string xmlFileName, saveFileName, readFileName;
+	// plik (wczytaj xml)
+	std::string xmlFileName;
 
+	/******************************************************************************************************************/
 	// TESTOWANIE
 	std::vector<int> parent1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	std::vector<int> parent2 = { 9, 3, 7, 8, 2, 6, 5, 1, 4 };
 
 	std::pair<std::vector<int>, std::vector<int>> descendands;
-	
-		// Wynik order crossover (poprawny)
-		// poczatek (index): 3
-		// koniec (index): 6
-		// Potomek 1 : 3 -> 8 -> 2 -> 4 -> 5 -> 6 -> 7 -> 1 -> 9
-		// Potomek 2 : 3 -> 4 -> 7 -> 8 -> 2 -> 6 -> 5 -> 9 -> 1
-		
-		// Wynik
-		// Potomek 1: 
-		// Potomek 2:
-	//
 
-	// testy
-	int numberOfTests = 5; 
+	const int NUMBEROFALGORITHMS = 3;
+	std::vector<std::shared_ptr<GAalgorithm>> gaAlgorithms;
+	for (int i = 0; i < NUMBEROFALGORITHMS; i++) {
+		gaAlgorithms.push_back(std::make_shared<GAalgorithm>()); // dodanie 3 instancji obiektu swAlgorithm do wektora
+	}
+
+	int bestChromosome;
+	int startingTournamentCount = 5;
+	int numberOfTests = 10; 
 	std::vector<int> timeLimitsForTest				 = { 120, 240, 360 };
 	std::vector<std::string> inputFileTest			 = { "ftv47.xml", "ftv170.xml", "rbg403.xml" };
 	std::vector<std::string> outputFileMinWeightTest = { "ftv47.txt", "ftv170.txt", "rbg403.txt" };
 	std::vector<std::string> outputFileMinCycleTest  = { "ftv47Cycle.txt", "ftv170Cycle.txt", "rbg403Cycle.txt" };
+	std::vector<int> testPopulations = { 2000, 2500, 3000, 3500, 4000, 4500, 5000 };
 
-	//////////////////////////////////////////////////
-	// dotyczasowe wnioski i parametry				//
-	// populacja:					2000            //
-	// liczba osobnikow w turnieju: 4				//
-	// wspolczynnik krzyzowania:	0.8				//
-	// Wyniki										//
-	// ftv170 - 4349, 240s  (2000 populacja)		//
-	// rbg430 - 3360, 360s  (1000 populacja)		//
-	// ftv47  - 1846, 120s  (2000 populacja)		//
-	//////////////////////////////////////////////////
+	std::vector<int> parent1SCX = { 0, 4, 6, 2, 5, 3, 1 };
+	std::vector<int> parent2SCX = { 0, 5, 1, 3, 2, 4, 6 };
+	std::vector<int> resultSCX;
 
-	// domyœlnie ustawione kryterium na 60s
+	//////////////////////////////////////////////////////////////////////////////
+	// dotyczasowe wnioski i parametry											//
+	// populacja:					2000										//
+	// wspolczynnik krzyzowania:	0.8											//
+	// Wyniki stare							 								    //
+	// ftv47  - 1789, 120s  (2000 populacja), lb osobników w turnieju: 3		//														
+	// ftv170 - 4349, 240s  (2000 populacja), lb osobników w turnieju: 9		//
+	// rbg430 - 3221, 360s  (2000 populacja), lb osobników w turnieju: 15		//
+	// Wynik nowe																//
+	// ftv47  - , 120s  (500 populacja), lb osobników w turnieju: 4				//
+	// ftv170 - 3010, 240s  (2000 populacja), lb osobników w turnieju: 9	insercja	//
+	// rbg430 - 2787, 360s  (500 populacja), lb osobników w turnieju: 15		//
+	//////////////////////////////////////////////////////////////////////////////
+	/******************************************************************************************************************/
+
 	int timeLimit = 60;
 	int populationSize;
 	double crossingFactor;
@@ -96,6 +99,7 @@ int main()
 			std::cout << "Podaj nazwe pliku: ";
 			cin >> xmlFileName;
 			matrix->loadFromXmlFile(xmlFileName);
+			gaAlgorithm->setMatrix(matrix);
 			//matrix->display();
 			break;
 
@@ -126,7 +130,7 @@ int main()
 		case 6:
 			std::cout << "Metody krzyzowania: \n";
 			std::cout << "1. Order crossover (OX) \n";
-			std::cout << "2. Modified order crossover (MOX)\n";
+			std::cout << "2. Sequential Constructive Crossover (SCX)\n";
 
 			do 
 			{
@@ -138,13 +142,10 @@ int main()
 
 			break;
 
-		case 7:
-			
-			break;
-
 		case 8:
 			cout << "algorytm wtrakcie wykonywania...\n";
-			cout << "Najkroszta sciezka: " << gaAlgorithm->run(matrix) << '\n';
+			cout << "Najkroszta sciezka: " << gaAlgorithm->run() << '\n';
+			cout << "Czas znalezienia: " << gaAlgorithm->getTimeBestChromosomeFoundAt() << "ms\n";
 
 			break;
 
@@ -162,6 +163,52 @@ int main()
 			std::cout << "Potomek 2: ";
 			showPath(descendands.second);
 			break;
+
+		case 10:
+			// Testy
+			for (int i = 0; i < numberOfTests; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					matrix->loadFromXmlFile(inputFileTest[j]);
+					gaAlgorithms[j]->setTimeLimit(timeLimitsForTest[j]);
+					bestChromosome = gaAlgorithms[j]->run();
+
+					DataManager::saveFileTestForGA(bestChromosome, gaAlgorithms[j]->getTournamentCount(), 600, gaAlgorithm->getTimeBestChromosomeFoundAt(), outputFileMinWeightTest[j]);
+
+					gaAlgorithms[j]->setTournamentCount(gaAlgorithms[j]->getTournamentCount() + 2);
+				}
+			}
+			break;
+
+		case 11:
+			std::cout << "Podaj liczbe osobnikow do turnieju: ";
+			std::cin >> startingTournamentCount;
+			gaAlgorithm->setTournamentCount(startingTournamentCount);
+			break;
+
+		case 12:
+			std::cout << "testuje...\n";
+			matrix->loadFromXmlFile("ftv170.xml");
+			gaAlgorithm->setMatrix(matrix);
+			
+			for (int i = 0; i < 21; i++)
+			{
+				gaAlgorithm->setPopulationSize(testPopulations[i % 3]);
+				bestChromosome = gaAlgorithm->run();
+				DataManager::saveFileTestForGA(bestChromosome, gaAlgorithms[i]->getTournamentCount(), testPopulations[i % 3], gaAlgorithm->getTimeBestChromosomeFoundAt(), "ftv170.txt");
+			}
+
+		case 13:
+			matrix->loadFromFile("testMatrix.txt");
+			matrix->display();
+			gaAlgorithm->setMatrix(matrix);
+			gaAlgorithm->run();
+			/*resultSCX = gaAlgorithm->SCX(parent1SCX, parent2SCX);
+			std::cout << '\n';
+			std::cout << "======\n";
+			DataManager::displayVector(resultSCX);
+			std::cout << "======\n";*/
 			
 		default:
 			std::cout << "Niepoprawny nr opcji!\n";

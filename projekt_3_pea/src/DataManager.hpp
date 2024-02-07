@@ -20,4 +20,7 @@ public:
 
 	// metoda do zapisywania danych do sprawozdania
 	static void saveFileTest(int minCycle, long long time, double a, double tk, const std::string& fileName);
+
+	// metoda dla ga
+	static void saveFileTestForGA(int bestChromosomeWeight, int tournamentCount, int populationSize, long long time, const std::string& fileName);
 };
